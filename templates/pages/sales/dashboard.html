@@ -44,21 +44,6 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                Daily Report
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                </a>
-                                <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="/add-report/{{ data.id }}">Add a Report</a>                
-                                    </nav>
-                                </div>
-                                <div class="collapse" id="collapseLayouts" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="/reports/view/{{ data.id }}">View Reports</a>
-                                    </nav>
-                                </div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
                                 <div class="sb-nav-link-icon">
                                     <i class="fas fa-book-open"></i>
@@ -78,7 +63,7 @@
                                     </a>
                                     <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
                                         <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="/leads/{{ data.id }}">View Leads</a>
+                                            <a class="nav-link" href="/leads/{{ data.id }}/new">View Leads</a>
                                         </nav>
                                     </div>
                                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
@@ -129,132 +114,6 @@
                                   <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                               </div>
                           </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                          <div class="card bg-warning text-white mb-4">
-                              <div class="card-body">
-                                    <span>Follow Up</span>
-                                    <span>{{ data.num_followups }}</span>
-                                </div>
-                              <div class="card-footer d-flex align-items-center justify-content-between">
-                                  <a class="small text-white stretched-link" href="/leads/{{ data.id }}/followup">View Details</a>
-                                  <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                              </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-danger text-white mb-4">
-                                <div class="card-body">
-                                    <span>Delayed</span>
-                                    <span>{{ data.num_delayed }}</span>
-                                  </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="/leads/{{ data.id }}/delayed">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                          <div class="card bg-success text-white mb-4">
-                                <div class="card-body">
-                                  <span >Won</span>
-                                  <span >{{ data.num_won }}</span>
-                                </div>
-                              <div class="card-footer d-flex align-items-center justify-content-between">
-                                  <a class="small text-white stretched-link" href="/deals/{{ data.id }}">View Details</a>
-                                  <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                              </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-secondary text-white mb-4">
-                                <div class="card-body">
-                                      <span>New Cold</span>
-                                      <span>{{ data.num_new_cold }}</span>
-                                  </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="/leads/{{ data.id }}/newcold">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-primary text-white mb-4">
-                                  <div class="card-body">
-                                    <span >New International</span>
-                                    <span >{{ data.num_new_international }}</span>
-                                  </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="/leads/{{ data.id }}/newglobal">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-primary text-white mb-4">
-                                  <div class="card-body">
-                                    <span >New Cold International</span>
-                                    <span >{{ data.num_new_cold_international }}</span>
-                                  </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="/leads/{{ data.id }}/coldglobal">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="container-fluid px-4">
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <i class="fas fa-table me-1"></i>
-                                    Stats
-                                </div>
-                                <div class="card-body">
-                                    <table id="datatablesSimple">
-                                        <thead>
-                                            <tr>
-                                                <th>Interested Hold</th>
-                                                <th>Interested Follow</th>
-                                                <th>Waiting</th>
-                                                <th>Promise Visit</th>
-                                                <th>No Answer Hold</th>
-                                                <th>No Answer Follow</th>
-                                                <th>Pre No Answer</th>
-                                                <th>Contact in Future</th>
-                                                <th>EOI</th>
-                                                <th>Meeting</th> 
-                                            </tr>
-                                        </thead>
-                                        <tfoot>
-                                            <tr>
-                                                <th>Interested Hold</th>
-                                                <th>Interested Follow</th>
-                                                <th>Waiting</th>
-                                                <th>Promise Visit</th>
-                                                <th>No Answer Hold</th>
-                                                <th>No Answer Follow</th>
-                                                <th>Pre No Answer</th>
-                                                <th>Contact in Future</th>
-                                                <th>EOI</th>
-                                                <th>Meeting</th> 
-                                            </tr>
-                                        </tfoot>
-                                        <tbody>
-                                            <tr>
-                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/interested-hold">{{ data.num_interested_hold }}</a></td>
-                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/interested-follow">{{ data.num_interested_follow }}</a></td>
-                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/waiting">{{ data.num_waiting }}</a></td>
-                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/promise-visit">{{ data.num_promise_visit }}</a></td>
-                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/no-answer-hold">{{ data.num_no_answer_hold }}</a></td>
-                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/no-answer-follow">{{ data.num_no_answer_follow }}</a></td>
-                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/pre-no-answer">{{ data.num_pre_no_answer }}</a></td>
-                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/contact-in-future">{{ data.num_contact_in_future }}</a></td>
-                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/eoi">{{ data.num_eoi }}</a></td>
-                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/meeting">{{ data.num_visits }}</a></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </main>
