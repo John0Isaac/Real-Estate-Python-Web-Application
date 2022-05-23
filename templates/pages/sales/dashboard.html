@@ -5,17 +5,17 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
-        <meta name="author" content="John Aziz" />
-        <title>Arram | Dashboard</title>
+        <meta name="author" content="Omar Khalil, John Aziz" />
+        <title>RealEstate | Dashboard</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="/static/css/styles.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-        <link rel="shortcut icon" href="/static/ico/favicon.png">
+        <link rel="shortcut icon" href="/static/ico/loginLogo.png">
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="/dashboard/{{ data.id }}">Arram Group</a>
+            <a class="navbar-brand ps-3" href="/dashboard/{{ data.id }}">RealEstate</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -130,12 +130,138 @@
                               </div>
                           </div>
                         </div>
+                        <div class="col-xl-3 col-md-6">
+                          <div class="card bg-warning text-white mb-4">
+                              <div class="card-body">
+                                    <span>Follow Up</span>
+                                    <span>{{ data.num_followups }}</span>
+                                </div>
+                              <div class="card-footer d-flex align-items-center justify-content-between">
+                                  <a class="small text-white stretched-link" href="/leads/{{ data.id }}/followup">View Details</a>
+                                  <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                              </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-danger text-white mb-4">
+                                <div class="card-body">
+                                    <span>Delayed</span>
+                                    <span>{{ data.num_delayed }}</span>
+                                  </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="/leads/{{ data.id }}/delayed">View Details</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                          <div class="card bg-success text-white mb-4">
+                                <div class="card-body">
+                                  <span >Won</span>
+                                  <span >{{ data.num_won }}</span>
+                                </div>
+                              <div class="card-footer d-flex align-items-center justify-content-between">
+                                  <a class="small text-white stretched-link" href="/deals/{{ data.id }}">View Details</a>
+                                  <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                              </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-secondary text-white mb-4">
+                                <div class="card-body">
+                                      <span>New Cold</span>
+                                      <span>{{ data.num_new_cold }}</span>
+                                  </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="/leads/{{ data.id }}/newcold">View Details</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-primary text-white mb-4">
+                                  <div class="card-body">
+                                    <span >New International</span>
+                                    <span >{{ data.num_new_international }}</span>
+                                  </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="/leads/{{ data.id }}/newglobal">View Details</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-primary text-white mb-4">
+                                  <div class="card-body">
+                                    <span >New Cold International</span>
+                                    <span >{{ data.num_new_cold_international }}</span>
+                                  </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="/leads/{{ data.id }}/coldglobal">View Details</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid px-4">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-table me-1"></i>
+                                    Stats
+                                </div>
+                                <div class="card-body">
+                                    <table id="datatablesSimple">
+                                        <thead>
+                                            <tr>
+                                                <th>Interested Hold</th>
+                                                <th>Interested Follow</th>
+                                                <th>Waiting</th>
+                                                <th>Promise Visit</th>
+                                                <th>No Answer Hold</th>
+                                                <th>No Answer Follow</th>
+                                                <th>Pre No Answer</th>
+                                                <th>Contact in Future</th>
+                                                <th>EOI</th>
+                                                <th>Meeting</th> 
+                                            </tr>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Interested Hold</th>
+                                                <th>Interested Follow</th>
+                                                <th>Waiting</th>
+                                                <th>Promise Visit</th>
+                                                <th>No Answer Hold</th>
+                                                <th>No Answer Follow</th>
+                                                <th>Pre No Answer</th>
+                                                <th>Contact in Future</th>
+                                                <th>EOI</th>
+                                                <th>Meeting</th> 
+                                            </tr>
+                                        </tfoot>
+                                        <tbody>
+                                            <tr>
+                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/interested-hold">{{ data.num_interested_hold }}</a></td>
+                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/interested-follow">{{ data.num_interested_follow }}</a></td>
+                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/waiting">{{ data.num_waiting }}</a></td>
+                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/promise-visit">{{ data.num_promise_visit }}</a></td>
+                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/no-answer-hold">{{ data.num_no_answer_hold }}</a></td>
+                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/no-answer-follow">{{ data.num_no_answer_follow }}</a></td>
+                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/pre-no-answer">{{ data.num_pre_no_answer }}</a></td>
+                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/contact-in-future">{{ data.num_contact_in_future }}</a></td>
+                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/eoi">{{ data.num_eoi }}</a></td>
+                                                <td><a class="link-primary text-decoration-none" href="/leads/{{ data.id }}/meeting">{{ data.num_visits }}</a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
                         <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Arram 2021</div>
+                            <div class="text-muted">Copyright &copy; RealEstate 2022</div>
                             <div>
                                 <a href="#">Privacy Policy</a>
                                 &middot;
@@ -153,4 +279,3 @@
         <script src="/static/js/datatables-simple-demo.js"></script>
     </body>
 </html>
-
