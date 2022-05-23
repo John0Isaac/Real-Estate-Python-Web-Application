@@ -270,18 +270,13 @@ def create_app(test_config=None):
                     Credentials.username = new_username
                     Credentials.update()
                     db.session.close()
-                    
-                    salary = Salaries.query.filter(Salaries.employees_id==id).one()
-                    salary.salary = new_salary
-                    salary.update()
-                    db.session.close()
+
                     
                     return redirect('/employees/'+ str(id))
                 except:
                     abort(422)
             employee = Employees.query.get(id)
-            Credentials = Credentials.query.filter(Credentials.employees_id==id).one()
-            salary = Salaries.query.filter(Salaries.employees_id==id).one()
+            Credentials = Credentials.query.filter(Credentials.employee_id==id).one()
 
             return render_template('pages/general-manager/edit-employees.html', data={
                 'sucess': True,
@@ -307,13 +302,13 @@ def create_app(test_config=None):
             employee = Employees.query.get(id)
             if not employee:
                 abort(404)
-            Credentials = Credentials.query.filter(Credentials.employees_id == employee.id).one()
+            credential = Credentials.query.filter(Credentials.employees_id == employee.employees_id).one()
             return render_template('pages/general-manager/employee.html', data={
                 'sucess': True,
                 'id': current_user.id,
                 'employee_id': employee.id,
                 'name': employee.name,
-                'username': Credentials.username,
+                'username': credential.username,
                 'id_number': employee.id_number,
                 'phone': employee.phone,
                 'date_of_birth': employee.date_of_birth,
@@ -325,12 +320,12 @@ def create_app(test_config=None):
             employee = Employees.query.get(id)
             if not employee:
                 abort(404)
-            Credentials = Credentials.query.filter(Credentials.employees_id == employee.id).one()
+            credential = Credentials.query.filter(Credentials.employees_id == employee.employees_id).one()
             return render_template('pages/admin/employee-view.html', data={
                 'sucess': True,
                 'id': current_user.id,
                 'name': employee.name,
-                'username': Credentials.username,
+                'username': credential.username,
                 'id_number': employee.id_number,
                 'phone': employee.phone,
                 'date_of_birth': employee.date_of_birth,
@@ -342,7 +337,7 @@ def create_app(test_config=None):
             employee = Employees.query.get(id)
             if not employee:
                 abort(404)
-            Credentials = Credentials.query.filter(Credentials.employees_id == employee.id).one()
+            Credentials = Credentials.query.filter(Credentials.employees_id == employee.employees_id).one()
             return render_template('pages/manager/employee-view.html', data={
                 'sucess': True,
                 'id': current_user.id,
@@ -365,66 +360,58 @@ def create_app(test_config=None):
     @app.route('/employee/<int:id>', methods=['GET','POST'])
     @login_required
     def get_employee_view(id):
-        if current_user.employees_id == id:
-            employee = Employees.query.get(current_user.employees_id)
+        if current_user.employee_id == id:
+            employee = Employees.query.get(current_user.employee_id)
             if not employee:
                 abort(404)
-            Credentials = Credentials.query.filter(Credentials.employees_id == employee.id).one()
+            credential = Credentials.query.filter(Credentials.employee_id == employee.employees_id).one()
             if current_user.role == 'sales':
                 return render_template('pages/sales/employee-view.html', data={
                     'sucess': True,
                     'id': id,
-                    'employee_id': employee.id,
-                    'name': employee.name,
-                    'username': Credentials.username,
-                    'id_number': employee.id_number,
-                    'phone': employee.phone,
-                    'date_of_birth': employee.date_of_birth,
+                    'employee_id': employee.employees_id,
+                    'name': employee.f_name +' '+employee.l_name,
+                    'username': credential.username,
+                    'id_number': employee.ssn,
+                    'phone': employee.phone_number,
                     'address': employee.address,
-                    'qualifications': employee.qualifications,
-                    'job_title': employee.job_title
+                    'qualifications': employee.qualifications
                 }), 200
             elif current_user.role == 'admin':
                 return render_template('pages/admin/employee-view-edit.html', data={
                     'sucess': True,
                     'id': id,
-                    'employee_id': employee.id,
-                    'name': employee.name,
-                    'username': Credentials.username,
-                    'id_number': employee.id_number,
-                    'phone': employee.phone,
-                    'date_of_birth': employee.date_of_birth,
+                    'employee_id': employee.employees_id,
+                    'name': employee.f_name +' '+employee.l_name,
+                    'username': credential.username,
+                    'id_number': employee.ssn,
+                    'phone': employee.phone_number,
                     'address': employee.address,
-                    'qualifications': employee.qualifications,
-                    'job_title': employee.job_title
+                    'qualifications': employee.qualifications
                 }), 200
             elif current_user.role == 'manager':
                 return render_template('pages/manager/employee-view-edit.html', data={
                     'sucess': True,
                     'id': id,
-                    'employee_id': employee.id,
-                    'name': employee.name,
-                    'username': Credentials.username,
-                    'id_number': employee.id_number,
-                    'phone': employee.phone,
-                    'date_of_birth': employee.date_of_birth,
+                    'employee_id': employee.employees_id,
+                    'name': employee.f_name +' '+employee.l_name,
+                    'username': credential.username,
+                    'id_number': employee.ssn,
+                    'phone': employee.phone_number,
                     'address': employee.address,
-                    'qualifications': employee.qualifications,
-                    'job_title': employee.job_title
+                    'qualifications': employee.qualifications
                 }), 200
             elif current_user.role == 'teamlead':
                 return render_template('pages/teamlead/employee-view-edit.html', data={
                     'sucess': True,
                     'id': id,
-                    'employee_id': employee.id,
-                    'name': employee.name,
-                    'username': Credentials.username,
-                    'id_number': employee.id_number,
-                    'phone': employee.phone,
-                    'date_of_birth': employee.date_of_birth,
+                    'employee_id': employee.employees_id,
+                    'name': employee.f_name +' '+employee.l_name,
+                    'username': credential.username,
+                    'id_number': employee.ssn,
+                    'phone': employee.phone_number,
                     'address': employee.address,
-                    'qualifications': employee.qualifications,
-                    'job_title': employee.job_title
+                    'qualifications': employee.qualifications
                 }), 200
         else:
             abort(403)
@@ -432,71 +419,71 @@ def create_app(test_config=None):
     @app.route('/settings/<int:id>')
     @login_required
     def settings(id):
-        if current_user.employees_id == id:
+        if current_user.employee_id == id:
             if current_user.role == 'gm':
-                return render_template('pages/general-manager/settings.html', data={'id': current_user.employees_id})
+                return render_template('pages/general-manager/settings.html', data={'id': current_user.employee_id})
             elif current_user.role == 'admin':
-                return render_template('pages/admin/settings.html', data={'id': current_user.employees_id})
+                return render_template('pages/admin/settings.html', data={'id': current_user.employee_id})
             elif current_user.role == 'manager':
-                return render_template('pages/manager/settings.html', data={'id': current_user.employees_id})
+                return render_template('pages/manager/settings.html', data={'id': current_user.employee_id})
             elif current_user.role == 'sales':
-                return render_template('pages/sales/settings.html', data={'id': current_user.employees_id})
+                return render_template('pages/sales/settings.html', data={'id': current_user.employee_id})
             elif current_user.role == 'teamlead':
-                return render_template('pages/teamlead/settings.html', data={'id': current_user.employees_id})
+                return render_template('pages/teamlead/settings.html', data={'id': current_user.employee_id})
         else:
             abort(403)
     
     @app.route('/security/<int:id>', methods=['GET', 'POST'])
     @login_required
     def security(id):     
-        if current_user.employees_id == id or current_user.role == 'gm':
+        if current_user.employee_id == id or current_user.role == 'gm':
             if request.method == 'POST':
                 old_password = request.form.get('old_password', None)
                 new_password = request.form.get('new_password', None)
-                credential = Credentials.query.filter(Credentials.employees_id == id).one()
-                if not check_password_hash(credential.password, old_password):
+                credential = Credentials.query.filter(Credentials.employee_id == id).one()
+                if not credential.password == old_password:
                     if current_user.role == 'gm':
                         flash('Please check your old password')
-                        return render_template('pages/general-manager/change-password.html', data={'id': current_user.employees_id})
+                        return render_template('pages/general-manager/change-password.html', data={'id': current_user.employee_id})
                     elif current_user.role == 'admin':
                         flash('Please check your old password')
-                        return render_template('pages/admin/change-password.html', data={'id': current_user.employees_id})
+                        return render_template('pages/admin/change-password.html', data={'id': current_user.employee_id})
                     elif current_user.role == 'manager':
                         flash('Please check your old password')
-                        return render_template('pages/manager/change-password.html', data={'id': current_user.employees_id})
+                        return render_template('pages/manager/change-password.html', data={'id': current_user.employee_id})
                     elif current_user.role == 'teamlead':
                         flash('Please check your old password')
-                        return render_template('pages/teamlead/change-password.html', data={'id': current_user.employees_id})
+                        return render_template('pages/teamlead/change-password.html', data={'id': current_user.employee_id})
                     else:
                         flash('Please check your old password')
-                        return render_template('pages/sales/change-password.html', data={'id': current_user.employees_id})  
+                        return render_template('pages/sales/change-password.html', data={'id': current_user.employee_id})  
                 else:
-                    credential.password = generate_password_hash(new_password,  method='pbkdf2:sha256', salt_length=16)
+                    credential.password = new_password
                     credential.update()
                     db.session.close()
                     return redirect('/employee/'+str(id))
             else:
                 if current_user.role =='gm':
-                    return render_template('pages/general-manager/change-password.html', data={'id': current_user.employees_id})
+                    return render_template('pages/general-manager/change-password.html', data={'id': current_user.employee_id})
                 elif current_user.role == 'admin':
-                    return render_template('pages/admin/change-password.html', data={'id': current_user.employees_id})
+                    return render_template('pages/admin/change-password.html', data={'id': current_user.employee_id})
                 elif current_user.role == 'manager':
-                    return render_template('pages/manager/change-password.html', data={'id': current_user.employees_id})
+                    return render_template('pages/manager/change-password.html', data={'id': current_user.employee_id})
                 elif current_user.role=='sales':
-                    return render_template('pages/sales/change-password.html', data={'id': current_user.employees_id})
+                    return render_template('pages/sales/change-password.html', data={'id': current_user.employee_id})
                 elif current_user.role=='teamlead':
-                    return render_template('pages/teamlead/change-password.html', data={'id': current_user.employees_id})
+                    return render_template('pages/teamlead/change-password.html', data={'id': current_user.employee_id})
         else:
             abort(403)
     
     @app.route('/deals/<int:id>', methods=['GET'])
     @login_required
     def get_employee_deals(id):
-        if current_user.employees_id == id:
-            selection = Deals.query.filter(Deals.assigned_to == current_user.employees_id).all()
+        if current_user.employee_id == id:
+            selection = Deals.query.filter(Deals.assigned_to == current_user.employee_id).all()
             current_deals = [result.format() for result in selection]
             for a in current_deals:
-                    assigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == a['assigned_to'] ).first()
+                    assigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == a['assigned_to_id'] ).first()
                     a['assigned_to_name'] = assigned_to_name.name
             if current_user.role == 'teamlead': 
                 return render_template('pages/teamlead/employee-deals.html', data={
@@ -3151,9 +3138,9 @@ def create_app(test_config=None):
     @app.route('/employee/<int:id>/edit', methods=['GET','POST'])
     @login_required
     def edit_employee(id):
-        if current_user.employees_id == id:
+        if current_user.employee_id == id:
             if request.method == 'POST':
-                employee = Employees.query.get(current_user.employees_id)
+                employee = Employees.query.get(current_user.employee_id)
 
                 if not employee:
                     abort(404)
@@ -3161,83 +3148,66 @@ def create_app(test_config=None):
                     new_name = request.form.get('name', None)
                     new_id_number = request.form.get('id_number', None)
                     new_phone = request.form.get('phone', None)
-                    new_date_of_birth = request.form.get('date_of_birth', None)
                     new_address = request.form.get('address', None)
                     new_qualifications = request.form.get('qualifications', None)
-                    new_id_link = request.form.get('id_link', None)
-                    new_criminal_record_link = request.form.get('criminal_record_link', None)
-                    new_birth_certificate_link = request.form.get('birth_certificate_link', None)
-                    new_cv_link = request.form.get('cv_link', None)
 
-
-                    employee.name=new_name
-                    employee.id_number=new_id_number
-                    employee.phone=new_phone
-                    employee.date_of_birth=new_date_of_birth
+                    new_name = new_name.split()
+                    employee.f_name = new_name[0]
+                    employee.l_name = new_name[1]
+                    employee.ssn=new_id_number
+                    employee.phone_number=new_phone
                     employee.address=new_address
                     employee.qualifications=new_qualifications
-                    employee.id_link=new_id_link
-                    employee.criminal_record_link=new_criminal_record_link
-                    employee.birth_certificate_link=new_birth_certificate_link
-                    employee.cv_link=new_cv_link
                     employee.update()
                     db.session.close()
 
                     return redirect('/employee/'+ str(id))
                 except:
                     abort(422)
-            employee = Employees.query.get(current_user.employees_id)
+            employee = Employees.query.get(current_user.employee_id)
             if current_user.role == 'admin':
                 return render_template('pages/admin/edit-employee.html', data={
                     'sucess': True,
                     'id': id,
-                    'employees_id': employee.id,
-                    'name': employee.name,
-                    'id_number': employee.id_number,
-                    'phone': employee.phone,
-                    'date_of_birth': employee.date_of_birth,
+                    'employees_id': employee.employees_id,
+                    'name': employee.f_name + ' '+ employee.l_name,
+                    'id_number': employee.ssn,
+                    'phone': employee.phone_number,
                     'address': employee.address,
                     'qualifications': employee.qualifications,
-                    'job_title': employee.job_title
                 }), 200
             elif current_user.role == 'manager':
                 return render_template('pages/manager/edit-employee.html', data={
                     'sucess': True,
                     'id': id,
-                    'employees_id': employee.id,
-                    'name': employee.name,
-                    'id_number': employee.id_number,
-                    'phone': employee.phone,
-                    'date_of_birth': employee.date_of_birth,
+                    'employees_id': employee.employees_id,
+                    'name': employee.f_name + ' '+ employee.l_name,
+                    'id_number': employee.ssn,
+                    'phone': employee.phone_number,
                     'address': employee.address,
                     'qualifications': employee.qualifications,
-                    'job_title': employee.job_title
                 }), 200
             elif current_user.role == 'sales':
                 return render_template('pages/sales/edit-employee.html', data={
                     'sucess': True,
                     'id': id,
-                    'employees_id': employee.id,
-                    'name': employee.name,
-                    'id_number': employee.id_number,
-                    'phone': employee.phone,
-                    'date_of_birth': employee.date_of_birth,
+                    'employees_id': employee.employees_id,
+                    'name': employee.f_name + ' '+ employee.l_name,
+                    'id_number': employee.ssn,
+                    'phone': employee.phone_number,
                     'address': employee.address,
                     'qualifications': employee.qualifications,
-                    'job_title': employee.job_title
                 }), 200
             elif current_user.role == 'teamlead':
                 return render_template('pages/teamlead/edit-employee.html', data={
                     'sucess': True,
                     'id': id,
-                    'employees_id': employee.id,
-                    'name': employee.name,
-                    'id_number': employee.id_number,
-                    'phone': employee.phone,
-                    'date_of_birth': employee.date_of_birth,
+                    'employees_id': employee.employees_id,
+                    'name': employee.f_name + ' '+ employee.l_name,
+                    'id_number': employee.ssn,
+                    'phone': employee.phone_number,
                     'address': employee.address,
                     'qualifications': employee.qualifications,
-                    'job_title': employee.job_title
                 }), 200
         else:
             abort(403)
@@ -3418,7 +3388,7 @@ def create_app(test_config=None):
                 if a['assigned_to_id']:    
                     assigned_to_name = db.session.query(Employees.employees_id, Employees.f_name, Employees.l_name).filter(Employees.employees_id == a['assigned_to_id'] ).first()
                     a['assigned_to_name'] = assigned_to_name.f_name+ ' ' + assigned_to_name.l_name
-                if a['assigned_to_id']:    
+                if a['source_id']:    
                     source_name = db.session.query(Source.source_id, Source.name).filter(Source.source_id == a['source_id'] ).first()
                     a['source'] = source_name.name
                 if a['time_created']:
@@ -5253,22 +5223,22 @@ def create_app(test_config=None):
         if current_user.role == 'sales':
             return render_template('pages/sales/status-help.html', data={
                 'sucess': True,
-                'id': current_user.employees_id
+                'id': current_user.employee_id
                 })
         elif current_user.role == 'admin':
             return render_template('pages/admin/status-help.html', data={
                 'sucess': True,
-                'id': current_user.employees_id
+                'id': current_user.employee_id
                 })
         elif current_user.role == 'manager':
             return render_template('pages/manager/status-help.html', data={
                 'sucess': True,
-                'id': current_user.employees_id
+                'id': current_user.employee_id
                 })
         elif current_user.role == 'teamlead':
             return render_template('pages/teamlead/status-help.html', data={
                 'sucess': True,
-                'id': current_user.employees_id
+                'id': current_user.employee_id
                 })
 
     """
