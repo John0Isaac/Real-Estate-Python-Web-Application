@@ -526,7 +526,7 @@ Description
 class Description(db.Model):
     ___tablename__ = 'description'
 
-    description_id = Column(Integer, primary_key=True)
+    description_id = Column(Integer, primary_key=True, autoincrement=True)
     time_created = Column(Date)
     notes = Column(String(500))
     status_id = Column(Integer, ForeignKey('status.status_id'), nullable=True)

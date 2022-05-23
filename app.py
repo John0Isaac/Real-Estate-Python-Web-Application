@@ -79,7 +79,7 @@ def create_app(test_config=None):
 
     @app.route('/', methods=['GET'])
     def landing_page():
-        return render_template('pages/index.html')
+        return redirect("/login")
 
     @app.route('/about', methods=['GET'])
     def about_page():
@@ -3977,177 +3977,53 @@ def create_app(test_config=None):
     @login_required
     def edit_employee_lead(id, lead_id):
         if request.method == 'POST':
-            lead = Leads.query.filter(Leads.id == lead_id).one()
+            lead = Leads.query.filter(Leads.leads_id == lead_id).one()
             if not lead:
                 abort(404)
             new_description = request.form.get('description', None)
             new_status = request.form.get('status', None)
-            new_second_phone = request.form.get('second_phone', None)
-            new_next_follow_up = request.form.get('next_follow_up', None)
+
             new_current_time = datetime.utcnow()
-            if new_status == 'Won':
-                lead.last_follow_up = new_current_time
-                lead.description = new_description
-                lead.status = new_status
-                lead.second_phone = new_second_phone
-                if new_next_follow_up:
-                    lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                else:
-                    lead.next_follow_up = None
-                new_assigned_to = current_user.employees_id
-                lead.update()
-                db.session.close()
+            print(new_status)
+            status = Status.query.filter(Status.name == new_status).one()
+            status_id = status.status_id
+            lead.status_id = status_id
 
-                new_project_developer = request.form.get('project_developer', None)
-                new_project_name = request.form.get('project_name', None)
-                new_project_type = request.form.get('project_type', None)
-                new_unit_price = request.form.get('unit_price', None)
-                new_down_payment = request.form.get('down_payment', None)
-                new_commission = request.form.get('commission', None)
-                lead = Leads.query.get(lead_id)
+            new_assigned_to = current_user.employee_id
+            lead.update()
+            db.session.close()
 
-                new_deal = Deals(created_time=new_current_time, buyer_name=lead.client_name, phone=lead.phone, second_phone= lead.second_phone, email= lead.email, assigned_to=new_assigned_to, last_follow_up=new_current_time ,status=new_status, project_developer=new_project_developer, project_name=new_project_name, project_type=new_project_type, description=new_description, unit_price=int(new_unit_price), down_payment=int(new_down_payment), commission=new_commission)
-                new_deal.insert()
-                new_description = Description(created_time=new_current_time, description=new_description, status=new_status, employees_id=new_assigned_to,deals_id=new_deal.id ,leads_id= lead_id)
-                new_description.insert()
-                db.session.close()
+            new_description = Description(time_created=new_current_time, notes=new_description, status_id=status_id, employees_id=new_assigned_to, deals_id=None, leads_id=lead_id)
+            new_description.insert()
+            db.session.close()
 
-                return redirect('/leads/'+ str(id))
-            else:
-                new_assigned_to = current_user.employees_id
-                new_current_time = datetime.utcnow()
-                if new_status == 'Interested Hold':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = new_current_time + timedelta(days=2)
-                elif new_status == 'Interested Follow':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = new_current_time + timedelta(days=2)
-                elif new_status == 'Not Interested':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = None
-                elif new_status == 'Promise Visit':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = new_current_time + timedelta(days=1)
-                elif new_status == 'Meeting':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.visit_date = new_current_time
-                        lead.next_follow_up = new_current_time + timedelta(days=2)
-                elif new_status == 'Waiting':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = new_current_time + timedelta(hours=5)
-                elif new_status == 'EOI':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = new_current_time + timedelta(days=2)
-                elif new_status == 'Low Budget':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = None
-                elif new_status == 'Not Interested Now':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = None
-                elif new_status == 'Pre No Answer':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = new_current_time + timedelta(days=1)
-                elif new_status == 'No Answer':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = None
-                elif new_status == 'No Answer Hold':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = new_current_time + timedelta(days=1)
-                elif new_status == 'No Answer Follow':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = new_current_time + timedelta(days=1)
-                elif new_status == 'Not Reached':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = None
-                elif new_status == 'Contact in Future':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p')
-                    else:
-                        lead.next_follow_up = new_current_time + timedelta(days=15)
-                elif new_status == 'Lost':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = None
-                elif new_status == 'Won':
-                    if new_next_follow_up:
-                        lead.next_follow_up = datetime_from_local_to_utc(datetime.strptime(new_next_follow_up, '%m/%d/%Y %I:%M %p'))
-                    else:
-                        lead.next_follow_up = None
-                lead.description = new_description
-                lead.status = new_status
-                lead.second_phone = new_second_phone
-                lead.last_follow_up = new_current_time
-                
-                lead.update()
-                db.session.close()
-
-                new_description = Description(created_time=new_current_time, description=new_description, status=new_status, employees_id=new_assigned_to, deals_id=None, leads_id=lead_id)
-                new_description.insert()
-                db.session.close()
-
-                return redirect('/leads/'+ str(id))
-        lead = Leads.query.filter(Leads.id == lead_id).one()
+            return redirect('/leads/'+ str(id)+'/new')
+        lead = Leads.query.filter(Leads.leads_id == lead_id).one()
         if not lead:
             abort(404)
-        assigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == lead.assigned_to).first()
+        assigned_to_name = db.session.query(Employees.employees_id, Employees.f_name, Employees.l_name).filter(Employees.employees_id == lead.assigned_to_id).first()
+        assigned_to = assigned_to_name.f_name + ' ' +  assigned_to_name.l_name
         if current_user.role == 'teamlead':
             return render_template('pages/teamlead/edit-employee-lead.html', data={
                 'sucess': True,
                 'id': id,
-                'second_phone': lead.second_phone,
                 'lead_id': lead_id,
                 'client_name': lead.client_name,
-                'status': lead.status,
                 'phone': lead.phone,
-                'second_phone': lead.second_phone,
                 'email': lead.email,
-                'assigned_to_name': assigned_to_name.name,
-                'assigned_to': lead.assigned_to,
-                'description': lead.description
+                'assigned_to_name': assigned_to,
+                'assigned_to': lead.assigned_to_id,
             }), 200
         else:
             return render_template('pages/sales/edit-employee-lead.html', data={
                 'sucess': True,
                 'id': id,
-                'second_phone': lead.second_phone,
                 'lead_id': lead_id,
                 'client_name': lead.client_name,
-                'status': lead.status,
                 'phone': lead.phone,
-                'second_phone': lead.second_phone,
                 'email': lead.email,
-                'assigned_to_name': assigned_to_name.name,
-                'assigned_to': lead.assigned_to,
-                'description': lead.description
+                'assigned_to_name': assigned_to,
+                'assigned_to': lead.assigned_to_id,
             }),200
 
     @app.route('/leads/<int:id>/edit-new-cold/<int:lead_id>', methods=['GET', 'POST'])
