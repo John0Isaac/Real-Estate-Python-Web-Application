@@ -506,7 +506,7 @@ class Deals(db.Model):
 
     def format(self):
         return {
-            'leads_id': self.leads_id,
+            'deals_id': self.deals_id,
             'time_created': self.time_created,
             'buyer_name': self.buyer_name,
             'email': self.email,

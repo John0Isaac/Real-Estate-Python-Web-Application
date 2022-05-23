@@ -113,7 +113,7 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Leads</h1>
+                        <h1 class="mt-4">Deals</h1>
                         <ol class="breadcrumb mb-4">
                             <li class="breadcrumb-item">Employees</li>
                             <li class="breadcrumb-item active">Leads</li>
@@ -134,12 +134,9 @@
                                             <th>Phone</th>
                                             <th>Email</th>
                                             <th>Assigned To</th>
-                                            <th>Status</th>
-                                            <th>Last Follow Up</th>
-                                            <th>Project Developer</th>
+                                            <th>Project Location</th>
                                             <th>Project Name</th>
                                             <th>Project Type</th>
-                                            <th>Description</th>
                                             <th>Unit Price</th>
                                             <th>Down Payment</th>
                                             <th>Commission</th>
@@ -152,12 +149,9 @@
                                           <th>Phone</th>
                                           <th>Email</th>
                                           <th>Assigned To</th>
-                                          <th>Status</th>
-                                          <th>Last Follow Up</th>
-                                          <th>Project Developer</th>
+                                          <th>Project Location</th>
                                           <th>Project Name</th>
                                           <th>Project Type</th>
-                                          <th>Description</th>
                                           <th>Unit Price</th>
                                           <th>Down Payment</th>
                                           <th>Commission</th>
@@ -166,17 +160,14 @@
                                     <tbody>
                                         {% for d in data.deals%}
                                         <tr>
-                                          <td>{{ d.created_time }}</td>
+                                          <td>{{ d.time_created }}</td>
                                           <td>{{ d.buyer_name }}</td>
-                                          <td>{{ d.phone }}</td>
+                                          <td>{{ d.phone_number }}</td>
                                           <td>{{ d.email }}</td>
                                           <td>{{ d.assigned_to_name }}</td>
-                                          <td>{{ d.status }}</td>
-                                          <td>{{ d.last_follow_up }}</td>
-                                          <td>{{ d.project_developer }}</td>
+                                          <td>{{ d.location }}</td>
                                           <td>{{ d.project_name }}</td>
                                           <td>{{ d.project_type }}</td>
-                                          <td>{{ d.description }}</td>
                                           <td>{{ d.unit_price }}</td>
                                           <td>{{ d.down_payment }}</td>
                                           <td>{{ d.commission }}</td>

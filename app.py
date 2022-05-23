@@ -13,7 +13,7 @@ import pandas as pd
 from sqlalchemy.sql import text
 from sqlalchemy import or_, and_
 from sqlalchemy.sql import func
-from models import Employees, Credentials, Deals, Leads, Description, Status, Source, setup_db, db
+from models import Employees, Credentials, Deals, Leads, Description, Status, Source, Projects, setup_db, db
 
 secret_key="\x15\xd5\xafG?\x1cc?\xbe\x9b\xa9\x84<z\x92E+\xcbGW\x18\xddv\xb2"
 
@@ -480,11 +480,21 @@ def create_app(test_config=None):
     @login_required
     def get_employee_deals(id):
         if current_user.employee_id == id:
-            selection = Deals.query.filter(Deals.assigned_to == current_user.employee_id).all()
+            selection = Deals.query.filter(Deals.assigned_to_id == current_user.employee_id).all()
             current_deals = [result.format() for result in selection]
             for a in current_deals:
-                    assigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == a['assigned_to_id'] ).first()
-                    a['assigned_to_name'] = assigned_to_name.name
+                if a['assigned_to_id']:
+                    assigned_to_name = db.session.query(Employees.employees_id, Employees.f_name, Employees.l_name).filter(Employees.employees_id == a['assigned_to_id'] ).first()
+                    a['assigned_to_name'] = assigned_to_name.f_name + ' ' + assigned_to_name.l_name
+                if a['project_id']:
+                    project_data = db.session.query(Projects.projects_id, Projects.name, Projects.location, Projects.commission, Projects.type, Projects.unit_price).filter(Projects.projects_id == a['project_id'] ).first()
+                    a['project_name'] = project_data.name
+                    a['project_type'] = project_data.type
+                    a['unit_price'] = project_data.unit_price
+                    a['location'] = project_data.location
+                    a['commission'] = project_data.commission
+                if a['time_created']:
+                    a['time_created'] = datetime_from_utc_to_local(a['time_created'])
             if current_user.role == 'teamlead': 
                 return render_template('pages/teamlead/employee-deals.html', data={
                     'sucess': True,
