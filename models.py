@@ -8,7 +8,7 @@ from sqlalchemy.sql.functions import count
 
 # For using locally
 database_name = 'realestate'
-database_path = "mysql+mysqlconnector://{}@{}/{}".format('root:Passw0rd', 'localhost', database_name)
+database_path = "mysql+mysqlconnector://{}@{}/{}".format('root:root', 'localhost', database_name)
 
 # For production
 #database_path = os.environ['CLEARDB_DATABASE_URL']
