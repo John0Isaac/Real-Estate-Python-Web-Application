@@ -3944,47 +3944,32 @@ def create_app(test_config=None):
         selection = Description.query.filter(Description.leads_id == lead_id).all()
         descriptions = [result.format() for result in selection]
         for a in descriptions:
-            employee_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == a['employees_id'] ).first()
-            a['employees_name'] = employee_name.name
-            a['created_time'] = datetime_from_utc_to_local(a['created_time'])
-        if lead.assigned_to:
-            assigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == lead.assigned_to ).first()
+            if a['employees_id']:
+                employee_name = db.session.query(Employees.employees_id, Employees.f_name, Employees.l_name).filter(Employees.employees_id == a['employees_id'] ).first()
+                a['employees_name'] = employee_name.f_name + ' ' + employee_name.l_name 
+            if['time_created']:
+                a['created_time'] = datetime_from_utc_to_local(a['time_created'])
+        if lead.assigned_to_id:
+            assigned_to_name = db.session.query(Employees.employees_id, Employees.f_name, Employees.l_name).filter(Employees.employees_id == lead.assigned_to_id ).first()
+            assigned_to = assigned_to_name.f_name + ' ' + assigned_to_name.l_name 
         else:
             class assigned_to_obj(object):
                 pass
             assigned_to_name = assigned_to_obj()
             assigned_to_name.name = ''
-        if lead.preassigned_to :
-            preassigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == lead.preassigned_to ).first()
-        else:
-            class preassigned_to_obj(object):
-                pass
-            preassigned_to_name = preassigned_to_obj()
-            preassigned_to_name.name = ''
-        if lead.created_time:
-            created_time_gmt = datetime_from_utc_to_local(lead.created_time)
+        if lead.time_created:
+            created_time_gmt = datetime_from_utc_to_local(lead.time_created)
         return render_template('pages/sales/employee-lead.html', data={
             'sucess': True,
             'id': id,
-            'lead_id': lead.id,
+            'lead_id': lead.leads_id,
             'client_name': lead.client_name,
-            'whatsapp_link': lead.whatsapp_link,
-            'status': lead.status,
             'created_time': created_time_gmt,
             'phone': lead.phone,
-            'second_phone': lead.second_phone,
             'email': lead.email,
-            'ad_details': lead.ad_details,
-            'lead_type': lead.lead_type,
-            'source': lead.source,
-            'next_follow_up': lead.next_follow_up,
-            'country': lead.country,
-            'client_job': lead.client_job,
-            'assigned_to': assigned_to_name.name,
-            'preassigned_to': preassigned_to_name.name,
-            'description': lead.description,
+            'source': lead.source.name,
+            'assigned_to': assigned_to,
             'request': lead.request,
-            'channel': lead.channel,
             'descriptions': descriptions
         }), 200
     

@@ -233,6 +233,7 @@ class Employees(db.Model):
     job_history = db.relationship('Job_History', backref='employees', lazy='dynamic')
     deals = db.relationship('Deals', backref='employees', lazy='dynamic')
     leads = db.relationship('Leads', backref='employees', lazy='dynamic')
+    description = db.relationship('Description', backref='employees', lazy='dynamic')
 
 
 
@@ -531,14 +532,16 @@ class Description(db.Model):
     status_id = Column(Integer, ForeignKey('status.status_id'), nullable=True)
     deals_id = Column(Integer, ForeignKey('deals.deals_id'), nullable=True)
     leads_id = Column(Integer, ForeignKey('leads.leads_id'), nullable=True)
+    employees_id = Column(Integer, ForeignKey('employees.employees_id'), nullable=True)
 
 
-    def __init__(self, time_created, notes, status_id, deals_id, leads_id):
+    def __init__(self, time_created, notes, status_id, deals_id, leads_id, employees_id):
         self.time_created = time_created
         self.notes = notes
         self.status_id = status_id
         self.deals_id = deals_id
         self.leads_id = leads_id
+        self.employees_id = employees_id
 
 
     def insert(self):
@@ -554,10 +557,11 @@ class Description(db.Model):
 
     def format(self):
         return {
-            'id': self.id,
+            'description_id': self.description_id,
             'time_created': self.time_created,
             'notes': self.notes,
             'status_id': self.status_id,
             'deals_id': self.deals_id,
-            'leads_id': self.leads_id
+            'leads_id': self.leads_id,
+            'employees_id': self.employees_id
         }
