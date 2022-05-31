@@ -174,23 +174,16 @@ def create_app(test_config=None):
                 new_name = request.form.get('name', None)
                 new_id_number = request.form.get('id_number', None)
                 new_phone = request.form.get('phone', None)
-                new_date_of_birth = request.form.get('date_of_birth', None)
                 new_address = request.form.get('address', None)
                 new_qualifications = request.form.get('qualifications', None)
                 new_job_title = request.form.get('job_title', None)
-                new_id_link = request.form.get('id_link', None)
-                new_criminal_record_link = request.form.get('criminal_record_link', None)
-                new_birth_certificate_link = request.form.get('birth_certificate_link', None)
-                new_cv_link = request.form.get('cv_link', None)
+                new_net_salary = request.form.get('net_salary', None)
 
-                new_username = (((new_name.lower()).split(" "))[0])+'.'+(((new_name.lower()).split(" "))[1])+'@arramproperties.com'
+                new_username = (((new_name.lower()).split(" "))[0])+'.'+(((new_name.lower()).split(" "))[1])+'@gmail.com'
                 if not Credentials.query.filter(Credentials.username == new_username).first():
-                    new_employee = Employees(name=new_name, id_number=new_id_number, phone=new_phone, date_of_birth=new_date_of_birth, address=new_address, qualifications=new_qualifications, job_title=new_job_title, id_link=new_id_link, criminal_record_link=new_criminal_record_link, birth_certificate_link=new_birth_certificate_link, cv_link=new_cv_link, team_id=None)
+                    new_employee = Employees(f_name=(((new_name.lower()).split(" "))[0]), l_name=(((new_name.lower()).split(" "))[1]), ssn=new_id_number, phone_number=new_phone, address=new_address, qualifications=new_qualifications, job_id=new_job_title, salary=new_net_salary, gender_id=None)
                     new_employee.insert()
                     
-                    new_net_salary = request.form.get('net_salary', None)
-                    new_salary = Salaries(salary=new_net_salary, employees_id=new_employee.id)
-                    new_salary.insert()
                     if new_job_title == 'Sales Representative':
                         new_role = 'sales'
                     elif new_job_title == 'Admin':
@@ -295,15 +288,13 @@ def create_app(test_config=None):
             return render_template('pages/general-manager/employee.html', data={
                 'sucess': True,
                 'id': current_user.id,
-                'employee_id': employee.id,
                 'name': employee.f_name + ' '+ employee.l_name,
-                'username': credential.username,
-                'id_number': employee.id_number,
-                'phone': employee.phone,
-                'date_of_birth': employee.date_of_birth,
+                'username': credentials.username,
+                'id_number': employee.ssn,
+                'phone': employee.phone_number,
                 'address': employee.address,
                 'qualifications': employee.qualifications,
-                'job_title': employee.job_title
+                'job_title': (db.session.query(Jobs.jobs_id, Jobs.job_title).filter(Jobs.jobs_id == employee.job_id).first()).job_title
             }), 200
         elif current_user.role == 'admin':
             employee = Employees.query.get(id)
@@ -314,13 +305,12 @@ def create_app(test_config=None):
                 'sucess': True,
                 'id': current_user.id,
                 'name': employee.f_name + ' '+ employee.l_name,
-                'username': credential.username,
-                'id_number': employee.id_number,
-                'phone': employee.phone,
-                'date_of_birth': employee.date_of_birth,
+                'username': credentials.username,
+                'id_number': employee.ssn,
+                'phone': employee.phone_number,
                 'address': employee.address,
                 'qualifications': employee.qualifications,
-                'job_title': employee.job_title
+                'job_title': (db.session.query(Jobs.jobs_id, Jobs.job_title).filter(Jobs.jobs_id == employee.job_id).first()).job_title
             }), 200
         elif current_user.role == 'manager':
             employee = Employees.query.get(id)
@@ -2485,24 +2475,17 @@ def create_app(test_config=None):
     @app.route('/manager/leads/<int:id>', methods=['GET','POST'])
     @login_required
     def get_manager_leads(id):
-        if current_user.employees_id == id:
-            selection = Leads.query.order_by(Leads.created_time.desc()).all()
+        if current_user.employee_id == id:
+            selection = Leads.query.order_by(Leads.time_created.desc()).all()
             current_leads = [result.format() for result in selection]
-            all_sales = Employees.query.filter(or_(Employees.job_title == 'Sales Representative', Employees.job_title == 'Team Leader', Employees.job_title == 'Sales Manager')).all()
+            all_sales = Employees.query.all()
             all_sales = [result.format() for result in all_sales]
             for a in current_leads:
-                if a['assigned_to']:
-                    assigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == a['assigned_to'] ).first()
-                    a['assigned_to_name'] = assigned_to_name.name
-                if a['preassigned_to']:
-                    preassigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == a['preassigned_to'] ).first()
-                    a['preassigned_to_name'] = preassigned_to_name.name
-                if a['next_follow_up']:
-                    a['next_follow_up'] = datetime_from_utc_to_local(a['next_follow_up'])
-                if a['last_follow_up']:
-                    a['last_follow_up'] = datetime_from_utc_to_local(a['last_follow_up'])
-                if a['created_time']:
-                    a['created_time'] = datetime_from_utc_to_local(a['created_time'])
+                if a['assigned_to_id']:
+                    assigned_to_name = db.session.query(Employees.employees_id, Employees.f_name, Employees.l_name).filter(Employees.employees_id == a['assigned_to_id'] ).first()
+                    a['assigned_to_name'] = assigned_to_name.f_name + ' ' + assigned_to_name.l_name
+                if a['time_created']:
+                    a['created_time'] = datetime_from_utc_to_local(a['time_created'])
             return render_template('pages/manager/leads.html', data={
                 'sucess': True,
                 'id': id,
