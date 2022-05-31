@@ -13,7 +13,7 @@ import pandas as pd
 from sqlalchemy.sql import text
 from sqlalchemy import or_, and_
 from sqlalchemy.sql import func
-from models import Employees, Credentials, Deals, Leads, Description, Status, Source, Projects, setup_db, db
+from models import Employees, Credentials, Deals, Leads, Description, Status, Source, Projects, Jobs, setup_db, db
 
 secret_key="\x15\xd5\xafG?\x1cc?\xbe\x9b\xa9\x84<z\x92E+\xcbGW\x18\xddv\xb2"
 
@@ -81,46 +81,35 @@ def create_app(test_config=None):
     def landing_page():
         return redirect("/login")
 
-    @app.route('/about', methods=['GET'])
-    def about_page():
-        return render_template('pages/about-us.html')
-
-    @app.route('/contact', methods=['GET'])
-    def contact_page():
-        return render_template('pages/contacts.html')
-
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
             username = request.form.get('username')
             password = request.form.get('password')
             remember = True if request.form.get('remember') else False
-            print(username)
-            print(password)
-
-            user = Credentials.query.filter(Credentials.username == username).one()
-            print(user.password)
-            if not user or not user.password == password:
-                flash('Please check your password details and try again.')
+            try:
+                user = Credentials.query.filter(Credentials.username == username).one()
+                if not user or not user.password == password:
+                    flash('Please check your password details and try again.')
+                    return redirect("/login")
+                if user.role == 'gm' or user.role == 'hr' or user.role == 'it':
+                    login_user(user, remember=remember)
+                    return redirect('/employees')
+                elif user.role == 'admin':
+                    login_user(user, remember=remember)
+                    return redirect('/admin/dashboard')
+                elif user.role == 'teamlead':
+                    login_user(user, remember=remember)
+                    return redirect('/teamlead/dashboard')
+                elif user.role == 'manager':
+                    login_user(user, remember=remember)
+                    return redirect('/manager/dashboard')
+                else:
+                    login_user(user, remember=remember)
+                    return redirect('/dashboard/'+ str(user.employee_id))
+            except:
+                flash('Please check your login email and try again.')
                 return redirect("/login")
-            if user.role == 'gm' or user.role == 'hr' or user.role == 'it':
-                login_user(user, remember=remember)
-                return redirect('/employees')
-            elif user.role == 'admin':
-                login_user(user, remember=remember)
-                return redirect('/admin/dashboard')
-            elif user.role == 'teamlead':
-                login_user(user, remember=remember)
-                return redirect('/teamlead/dashboard')
-            elif user.role == 'manager':
-                login_user(user, remember=remember)
-                return redirect('/manager/dashboard')
-            else:
-                login_user(user, remember=remember)
-                return redirect('/dashboard/'+ str(user.employee_id))
-
-            flash('Please check your login email and try again.')
-            return redirect("/login")
         return render_template('pages/login.html')
 
 
@@ -155,11 +144,11 @@ def create_app(test_config=None):
                 'employees': current_employees,
             }), 200
         elif current_user.role == 'manager':
-            selection = Employees.query.order_by(Employees.id).all()
+            selection = Employees.query.order_by(Employees.employees_id).all()
             current_employees = [result.format() for result in selection]
             
             return render_template('pages/manager/employees.html', data={
-                'id': current_user.employees_id,
+                'id': current_user.employee_id,
                 'sucess': True,
                 'employees': current_employees,
             }), 200
@@ -302,12 +291,12 @@ def create_app(test_config=None):
             employee = Employees.query.get(id)
             if not employee:
                 abort(404)
-            credential = Credentials.query.filter(Credentials.employees_id == employee.employees_id).one()
+            credential = Credentials.query.filter(Credentials.employee_id == employee.employees_id).one()
             return render_template('pages/general-manager/employee.html', data={
                 'sucess': True,
                 'id': current_user.id,
                 'employee_id': employee.id,
-                'name': employee.name,
+                'name': employee.f_name + ' '+ employee.l_name,
                 'username': credential.username,
                 'id_number': employee.id_number,
                 'phone': employee.phone,
@@ -320,11 +309,11 @@ def create_app(test_config=None):
             employee = Employees.query.get(id)
             if not employee:
                 abort(404)
-            credential = Credentials.query.filter(Credentials.employees_id == employee.employees_id).one()
+            credential = Credentials.query.filter(Credentials.employee_id == employee.employees_id).one()
             return render_template('pages/admin/employee-view.html', data={
                 'sucess': True,
                 'id': current_user.id,
-                'name': employee.name,
+                'name': employee.f_name + ' '+ employee.l_name,
                 'username': credential.username,
                 'id_number': employee.id_number,
                 'phone': employee.phone,
@@ -337,18 +326,17 @@ def create_app(test_config=None):
             employee = Employees.query.get(id)
             if not employee:
                 abort(404)
-            Credentials = Credentials.query.filter(Credentials.employees_id == employee.employees_id).one()
+            credentials = Credentials.query.filter(Credentials.employee_id == employee.employees_id).one()
             return render_template('pages/manager/employee-view.html', data={
                 'sucess': True,
                 'id': current_user.id,
-                'name': employee.name,
-                'username': Credentials.username,
-                'id_number': employee.id_number,
-                'phone': employee.phone,
-                'date_of_birth': employee.date_of_birth,
+                'name': employee.f_name + ' '+ employee.l_name,
+                'username': credentials.username,
+                'id_number': employee.ssn,
+                'phone': employee.phone_number,
                 'address': employee.address,
                 'qualifications': employee.qualifications,
-                'job_title': employee.job_title
+                'job_title': (db.session.query(Jobs.jobs_id, Jobs.job_title).filter(Jobs.jobs_id == employee.job_id).first()).job_title
             }), 200
         else:
             abort(403)
@@ -517,64 +505,14 @@ def create_app(test_config=None):
     @login_required
     def manager_dashboard():
         if current_user.role == 'manager':
-            employees = Employees.query.filter(or_(Employees.job_title == 'Sales Representative', Employees.job_title == 'Team Leader', Employees.job_title == 'Sales Manager', Employees.job_title == 'Key Account', Employees.job_title == 'Admin')).all()
-            current_time = datetime.now(timezone.utc).date()
-            tot_fresh = Leads.query.filter(Leads.status == 'New', Leads.lead_type == 'National').count()
-            tot_new_international = Leads.query.filter(Leads.status == 'New', Leads.lead_type == 'International').count()
-            tot_new_cold_international = Leads.query.filter(Leads.status == 'New Cold', Leads.lead_type == 'International').count()
-            tot_new_cold = Leads.query.filter(Leads.status == 'New Cold', Leads.lead_type=='National').count()
-            tot_delayed = Leads.query.filter(func.date(Leads.next_follow_up) < current_time).count()
-            tot_followups = Leads.query.filter(func.date(Leads.next_follow_up) == current_time).count()
-            data = {"id": current_user.employees_id, "tot_fresh": tot_fresh, "tot_new_international": tot_new_international,"tot_new_cold":tot_new_cold, 'tot_new_cold_international':tot_new_cold_international, "tot_delayed":tot_delayed,"tot_followups": tot_followups, "employees":[]}
+            employees = Employees.query.all()
+            tot_leads = Leads.query.all()
+            data = {"id": current_user.employee_id, "tot_leads": len(tot_leads), "employees":[]}
             for employee in employees:
-                num_fresh = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'New', Leads.lead_type == 'National').count()
-                num_new_international = Leads.query.filter(Leads.assigned_to == employee.id, or_(Leads.status == 'New', Leads.status == 'New Cold'), Leads.lead_type == 'International').count()
-                num_new_cold = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'New Cold', Leads.lead_type=='National').count()
-                num_delayed = Leads.query.filter(Leads.assigned_to == employee.id, func.date(Leads.next_follow_up) < current_time).count()
-                num_followups = Leads.query.filter(Leads.assigned_to == employee.id, func.date(Leads.next_follow_up) == current_time).count()
-                num_interested_follow = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Interested Follow').count()
-                num_interested_hold = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Interested Hold').count()
-                num_promise_visit = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Promise Visit').count()
-                num_eoi = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'EOI').count()
-                num_waiting = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Waiting').count()
-                num_meeting = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Meeting').count()
-                num_pre_no_answer = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Pre No Answer').count()
-                num_contact_in_future = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Contact in Future').count()
-                num_won = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Won').count()
-                num_lost = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Lost').count()
-                num_not_interested = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Not Interested').count()
-                num_low_budget = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Low Budget').count()
-                num_not_interested_now = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Not Interested Now').count()
-                num_no_answer = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'No Answer').count()
-                num_no_answer_hold = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'No Answer Hold').count()
-                num_no_answer_follow = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'No Answer Follow').count()
-                num_not_reached = Leads.query.filter(Leads.assigned_to == employee.id, Leads.status == 'Not Reached').count()
-                num_total_leads = Leads.query.filter(Leads.assigned_to == employee.id).count()
+                num_total_leads = Leads.query.filter(Leads.assigned_to_id == employee.employees_id).count()
                 data['employees'].append({
-                    'employee_id': employee.id,
-                    'employee_name': employee.name,
-                    'num_fresh': num_fresh,
-                    'num_new_cold': num_new_cold,
-                    'num_new_international': num_new_international,
-                    'num_followups': num_followups,
-                    'num_delayed': num_delayed,
-                    'num_interested_follow': num_interested_follow,
-                    'num_interested_hold': num_interested_hold,
-                    'num_promise_visit': num_promise_visit,
-                    'num_pre_no_answer': num_pre_no_answer,
-                    'num_contact_in_future': num_contact_in_future,
-                    'num_eoi': num_eoi,
-                    'num_waiting': num_waiting,
-                    'num_meeting': num_meeting,
-                    'num_won': num_won,
-                    'num_lost': num_lost,
-                    'num_not_interested': num_not_interested,
-                    'num_low_budget': num_low_budget,
-                    'num_not_interested_now': num_not_interested_now,
-                    'num_no_answer': num_no_answer,
-                    'num_no_answer_hold': num_no_answer_hold,
-                    'num_no_answer_follow': num_no_answer_follow,
-                    'num_not_reached': num_not_reached,
+                    'employee_id': employee.employees_id,
+                    'employee_name': employee.f_name + ' ' + employee.l_name,
                     'num_total_leads': num_total_leads
                     })
             return render_template('pages/manager/dashboard.html', data=data), 200
@@ -1732,28 +1670,28 @@ def create_app(test_config=None):
     @login_required
     def select_assign_manager_lead(id, lead_id):
         body = request.get_json()
-        lead = Leads.query.filter(Leads.id == lead_id).one()
+        lead = Leads.query.filter(Leads.leads_id == lead_id).one()
         if not lead:
             abort(404)
         try:
+            
             new_assigned_to = body.get('assigned_to', None)
-            preassigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == lead.assigned_to).first()
-            assigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == new_assigned_to).first()
-            assign_from = preassigned_to_name.name
-            assign_to = assigned_to_name.name
+            preassigned_to_name = db.session.query(Employees.employees_id, Employees.f_name, Employees.l_name).filter(Employees.employees_id == lead.assigned_to_id).first()
+            assigned_to_name = db.session.query(Employees.employees_id, Employees.f_name, Employees.l_name).filter(Employees.employees_id == new_assigned_to).first()
+            
+            assign_from = preassigned_to_name.f_name + ' ' + preassigned_to_name.l_name
+            assign_to = assigned_to_name.f_name + ' ' + assigned_to_name.l_name
             new_description = 'From ' + assign_from + ' To ' + assign_to
-            new_status = "Assign Lead"
             
             new_current_time = datetime.utcnow()
-            lead.preassigned_to = lead.assigned_to
-            lead.assigned_to = new_assigned_to
-            lead.last_follow_up = new_current_time
+            lead.assigned_to_id = new_assigned_to
             
-            employee_id = current_user.employees_id
+            employee_id = current_user.employee_id
 
             lead.update()
+            
             db.session.close()
-            new_description = Description(created_time=new_current_time, description=new_description, status=new_status, employees_id=employee_id, deals_id=None, leads_id=lead_id)
+            new_description = Description(time_created=new_current_time, notes=new_description, status_id=14, employees_id=employee_id, deals_id=None, leads_id=lead_id)
             new_description.insert()
             db.session.close()
 
@@ -1763,26 +1701,19 @@ def create_app(test_config=None):
         except:
             abort(404)
 
-    @app.route('/manager/leads/<int:id>/total-new', methods=['GET'])
+    @app.route('/manager/leads/<int:id>/total-leads', methods=['GET'])
     @login_required
-    def manager_get_all_new_leads(id):
-        selection = Leads.query.filter(Leads.status == 'New', Leads.lead_type == 'National').all()
+    def manager_get_all_leads(id):
+        selection = Leads.query.all()
         current_leads = [result.format() for result in selection]
-        all_sales = Employees.query.filter(or_(Employees.job_title == 'Sales Representative', Employees.job_title == 'Team Leader', Employees.job_title == 'Sales Manager')).all()
+        all_sales = Employees.query.all()
         for a in current_leads:
-            if a['assigned_to']:    
-                assigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == a['assigned_to'] ).first()
-                a['assigned_to_name'] = assigned_to_name.name
-            if a['preassigned_to']:
-                preassigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == a['preassigned_to'] ).first()
-                a['preassigned_to_name'] = preassigned_to_name.name
-            if a['next_follow_up']:
-                a['next_follow_up'] = datetime_from_utc_to_local(a['next_follow_up'])
-            if a['last_follow_up']:
-                a['last_follow_up'] = datetime_from_utc_to_local(a['last_follow_up'])
-            if a['created_time']:
-                a['created_time'] = datetime_from_utc_to_local(a['created_time'])
-        return render_template('pages/manager/total-new-leads.html', data={
+            if a['assigned_to_id']:    
+                assigned_to_name = db.session.query(Employees.employees_id, Employees.f_name, Employees.l_name).filter(Employees.employees_id == a['assigned_to_id'] ).first()
+                a['assigned_to_name'] = assigned_to_name.f_name + ' ' + assigned_to_name.l_name
+            if a['time_created']:
+                a['created_time'] = datetime_from_utc_to_local(a['time_created'])
+        return render_template('pages/manager/total-leads.html', data={
             'sucess': True,
             'id': id,
             'leads': current_leads,
@@ -2134,22 +2065,15 @@ def create_app(test_config=None):
     @app.route('/manager/leads/<int:id>/total-leads/<int:employee_id>', methods=['GET'])
     @login_required
     def manager_get_total_leads(id, employee_id):
-        selection = Leads.query.filter(Leads.assigned_to == employee_id).all()
+        selection = Leads.query.filter(Leads.assigned_to_id == employee_id).all()
         current_leads = [result.format() for result in selection]
-        all_sales = Employees.query.filter(or_(Employees.job_title == 'Sales Representative', Employees.job_title == 'Team Leader', Employees.job_title == 'Sales Manager', Employees.job_title=='Key Account', Employees.job_title=='Admin')).all()
+        all_sales = Employees.query.all()
         for a in current_leads:
-            if a['assigned_to']:    
-                assigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == a['assigned_to'] ).first()
-                a['assigned_to_name'] = assigned_to_name.name
-            if a['preassigned_to']:
-                preassigned_to_name = db.session.query(Employees.id, Employees.name).filter(Employees.id == a['preassigned_to'] ).first()
-                a['preassigned_to_name'] = preassigned_to_name.name
-            if a['next_follow_up']:
-                a['next_follow_up'] = datetime_from_utc_to_local(a['next_follow_up'])
-            if a['last_follow_up']:
-                a['last_follow_up'] = datetime_from_utc_to_local(a['last_follow_up'])
-            if a['created_time']:
-                a['created_time'] = datetime_from_utc_to_local(a['created_time'])
+            if a['assigned_to_id']:    
+                assigned_to_name = db.session.query(Employees.employees_id, Employees.f_name, Employees.l_name).filter(Employees.employees_id == a['assigned_to_id'] ).first()
+                a['assigned_to_name'] = assigned_to_name.f_name + ' ' + assigned_to_name.l_name
+            if a['time_created']:
+                a['created_time'] = datetime_from_utc_to_local(a['time_created'])
         return render_template('pages/manager/small-leads.html', data={
             'sucess': True,
             'id': id,

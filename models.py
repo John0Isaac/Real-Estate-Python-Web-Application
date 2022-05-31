@@ -1,4 +1,3 @@
-from decimal import Decimal
 from sqlalchemy import Column, String, Integer, ForeignKey, Date, Boolean, DECIMAL
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -8,7 +7,7 @@ from sqlalchemy.sql.functions import count
 
 # For using locally
 database_name = 'realestate'
-database_path = "mysql+mysqlconnector://{}@{}/{}".format('root:root', 'localhost', database_name)
+database_path = "mysql+mysqlconnector://{}@{}/{}".format('root:Passw0rd', 'localhost', database_name)
 
 # For production
 #database_path = os.environ['CLEARDB_DATABASE_URL']
@@ -261,7 +260,7 @@ class Employees(db.Model):
 
     def format(self):
         return {
-            'id': self.id,
+            'id': self.employees_id,
             'ssn': self.ssn,
             'f_name': self.f_name,
             'l_name': self.l_name,

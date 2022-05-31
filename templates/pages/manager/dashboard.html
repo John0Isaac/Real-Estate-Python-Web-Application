@@ -142,74 +142,14 @@
                             <div class="col-xl-3 col-md-6">
                               <div class="card bg-primary text-white mb-4">
                                   <div class="card-body">
-                                    <span>Total New Leads</span>
-                                    <span>{{ data.tot_fresh }}</span>
+                                    <span>Total Leads</span>
+                                    <span>{{ data.tot_leads }}</span>
                                   </div>
                                   <div class="card-footer d-flex align-items-center justify-content-between">
-                                      <a class="small text-white stretched-link" href="/manager/leads/{{ data.id }}/total-new">View Details</a>
+                                      <a class="small text-white stretched-link" href="/manager/leads/{{ data.id }}/total-leads">View Details</a>
                                       <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                   </div>
                               </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                              <div class="card bg-warning text-white mb-4">
-                                  <div class="card-body">
-                                        <span>Total Follow Up</span>
-                                        <span>{{ data.tot_followups }}</span>
-                                    </div>
-                                  <div class="card-footer d-flex align-items-center justify-content-between">
-                                      <a class="small text-white stretched-link" href="/manager/leads/{{ data.id }}/total-followup">View Details</a>
-                                      <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                  </div>
-                              </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-danger text-white mb-4">
-                                    <div class="card-body">
-                                        <span>Total Delayed</span>
-                                        <span>{{ data.tot_delayed }}</span>
-                                      </div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="/manager/leads/{{ data.id }}/total-delayed">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-secondary text-white mb-4">
-                                    <div class="card-body">
-                                          <span>Total New Cold</span>
-                                          <span>{{ data.tot_new_cold }}</span>
-                                      </div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="/manager/leads/{{ data.id }}/total-newcold">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-primary text-white mb-4">
-                                      <div class="card-body">
-                                        <span >Total New International</span>
-                                        <span >{{ data.tot_new_international }}</span>
-                                      </div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="/manager/leads/{{ data.id }}/total-newglobal">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-primary text-white mb-4">
-                                      <div class="card-body">
-                                        <span >Total New Cold International</span>
-                                        <span >{{ data.tot_new_cold_international }}</span>
-                                      </div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="/manager/leads/{{ data.id }}/total-coldglobal">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
                             </div>
                         <div class="container-fluid px-4">
                         <div class="card mb-4">
@@ -222,84 +162,18 @@
                                     <thead>
                                         <tr>
                                             <th>Employee</th>
-                                            <th>New</th>
-                                            <th>New Cold</th>
-                                            <th>New International</th>
-                                            <th>Follow ups</th>
-                                            <th>Delayed</th>
-                                            <th>Interested Follow</th>
-                                            <th>Interested Hold</th>
-                                            <th>Promist Visit</th>
-                                            <th>Pre No Answer</th>
-                                            <th>Contact in Future</th>
-                                            <th>EOI</th>
-                                            <th>Waiting</th>
-                                            <th>Meeting</th>
-                                            <th>Won</th>
-                                            <th>Lost</th>
-                                            <th>Not Interested</th>
-                                            <th>Low Budget</th>
-                                            <th>Not Interested Now</th>
-                                            <th>No Answer</th>
-                                            <th>No Answer Hold</th>
-                                            <th>No Answer Follow</th>
-                                            <th>Not Reached</th>
-                                            <th>Total</th>
+                                            <th>Total Leads</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                             <th>Employee</th>
-                                            <th>New</th>
-                                            <th>New Cold</th>
-                                            <th>New International</th>
-                                            <th>Follow ups</th>
-                                            <th>Delayed</th>
-                                            <th>Interested Follow</th>
-                                            <th>Interested Hold</th>
-                                            <th>Promist Visit</th>
-                                            <th>Pre No Answer</th>
-                                            <th>Contact in Future</th>
-                                            <th>EOI</th>
-                                            <th>Waiting</th>
-                                            <th>Meeting</th>
-                                            <th>Won</th>
-                                            <th>Lost</th>
-                                            <th>Not Interested</th>
-                                            <th>Low Budget</th>
-                                            <th>Not Interested Now</th>
-                                            <th>No Answer</th>
-                                            <th>No Answer Hold</th>
-                                            <th>No Answer Follow</th>
-                                            <th>Not Reached</th>
-                                            <th>Total</th>
+                                            <th>Total Leads</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
                                         {% for d in data.employees %}
                                             <td>{{ d.employee_name }}</td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/new/{{ d.employee_id }}">{{ d.num_fresh }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/newcold/{{ d.employee_id }}">{{ d.num_new_cold }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/newglobal/{{ d.employee_id }}">{{ d.num_new_international }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/followup/{{ d.employee_id }}">{{ d.num_followups }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/delayed/{{ d.employee_id }}">{{ d.num_delayed }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/interested-follow/{{ d.employee_id }}">{{ d.num_interested_follow }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/interested-hold/{{ d.employee_id }}">{{ d.num_interested_hold }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/promise-visit/{{ d.employee_id }}">{{ d.num_promise_visit }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/pre-no-answer/{{ d.employee_id }}">{{ d.num_pre_no_answer }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/contact-in-future/{{ d.employee_id }}">{{ d.num_contact_in_future }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/eoi/{{ d.employee_id }}">{{ d.num_eoi }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/waiting/{{ d.employee_id }}">{{ d.num_waiting }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/meeting/{{ d.employee_id }}">{{ d.num_meeting }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/won/{{ d.employee_id }}">{{ d.num_won }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/lost/{{ d.employee_id }}">{{ d.num_lost }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/not-interested/{{ d.employee_id }}">{{ d.num_not_interested }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/low-budget/{{ d.employee_id }}">{{ d.num_low_budget }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/not-interested-now/{{ d.employee_id }}">{{ d.num_not_interested_now }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/no-answer/{{ d.employee_id }}">{{ d.num_no_answer }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/no-answer-hold/{{ d.employee_id }}">{{ d.num_no_answer_hold }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/no-answer-follow/{{ d.employee_id }}">{{ d.num_no_answer_follow }}</a></td>
-                                            <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/not-reached/{{ d.employee_id }}">{{ d.num_not_reached }}</a></td>
                                             <td><a class="link-primary text-decoration-none" href="/manager/leads/{{ data.id }}/total-leads/{{ d.employee_id }}">{{ d.num_total_leads }}</a></td>
                                         </tr>
                                         {% endfor %}

@@ -236,10 +236,10 @@
                                           <td>{{ d.email }}</td>
                                           <td>{{ d.preassigned_to_name }}</td>
                                           <td>
-                                            <select class="form-select" id="assigned_to" name="assigned_to" aria-label="Default select example" onchange="fetch('/manager/'+'{{data.id}}'+'/select-assign-lead/'+'{{ d.id }}', {method: 'PATCH', body: JSON.stringify({ 'assigned_to': this.options[this.selectedIndex].value}), headers: {'Content-Type': 'application/json'}});" required>
-                                                <option selected value="{{ d.assigned_to }}">{{ d.assigned_to_name }}</option>
+                                            <select class="form-select" id="assigned_to" name="assigned_to" aria-label="Default select example" onchange="fetch('/manager/'+'{{data.id}}'+'/select-assign-lead/'+'{{ d.leads_id }}', {method: 'PATCH', body: JSON.stringify({ 'assigned_to': this.options[this.selectedIndex].value}), headers: {'Content-Type': 'application/json'}});" required>
+                                                <option selected value="{{ d.assigned_to_id }}">{{ d.assigned_to_name }}</option>
                                                 {% for d in data.all_sales%}
-                                                <option value="{{ d.id }}">{{ d.name}}</option>
+                                                <option value="{{ d.employees_id }}">{{ d.f_name }} {{ d.l_name }}</option>
                                                 {% endfor %}
                                             </select>
                                           </td>
