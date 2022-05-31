@@ -79,7 +79,33 @@ def create_app(test_config=None):
 
     @app.route('/', methods=['GET'])
     def landing_page():
-        return redirect("/login")
+        return render_template("pages/index.html")
+    
+    @app.route('/contact', methods=['GET', 'POST'])
+    def contacts():
+        if request.method == 'POST':
+            body = request.get_json()
+            name = body.get("name", None)
+            email = body.get("email", None)
+            phone = body.get("phone", None)
+            message = body.get("message", None)
+            new_current_time = datetime.utcnow()
+            new_id = db.session.query(func.max(Leads.leads_id)).first()
+            lead = Leads(leads_id = new_id[0] +1, time_created = new_current_time, client_name = name, email = email, request = message, phone = phone, assigned_to_id = 15, source_id = 5)
+            lead.insert()
+            db.session.close()
+            return jsonify({
+                "success": True,
+            }),200
+        return render_template("pages/contacts.html")
+    
+    @app.route('/projects', methods=['GET'])
+    def projects():
+        return render_template("pages/projects.html")
+
+    @app.route('/about', methods=['GET'])
+    def about():
+        return render_template("pages/about-us.html")
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
