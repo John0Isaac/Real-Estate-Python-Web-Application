@@ -6,11 +6,11 @@ from sqlalchemy.sql import func
 from sqlalchemy.sql.functions import count
 
 # For using locally
-database_name = 'realestate'
-database_path = "mysql+mysqlconnector://{}@{}/{}".format('root:root', 'localhost', database_name)
+#database_name = 'realestate'
+#database_path = "mysql+mysqlconnector://{}@{}/{}".format('root:root', 'localhost', database_name)
 
 # For production
-#database_path = os.environ['CLEARDB_DATABASE_URL']
+database_path = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
 
