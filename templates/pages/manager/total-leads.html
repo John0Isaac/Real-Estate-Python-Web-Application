@@ -159,25 +159,10 @@
                                           <th>Created Time</th>
                                           <th>Client Name</th>
                                           <th>Phone</th>
-                                          <th>Whatsapp</th>
-                                          <th>Second Phone</th>
                                           <th>Email</th>
-                                          <th>Pre Assigned To</th>
                                           <th>Assigned To</th>
-                                          <th>Status</th>
-                                          <th>Next Follow Up</th>
-                                          <th>Last Follow Up</th>
                                           <th>Request</th>
-                                          <th>Description</th>
-                                          <th>Client Job</th>
-                                          <th>Channel</th>
                                           <th>Source</th>
-                                          <th>Ad Details</th>
-                                          <th>Visit Date</th>
-                                          <th>Lead Type</th>
-                                          <th>Country</th>
-                                          <th>Campaign</th>
-                                          <th>Round</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -186,25 +171,10 @@
                                           <th>Created Time</th>
                                           <th>Client Name</th>
                                           <th>Phone</th>
-                                          <th>Whatsapp</th>
-                                          <th>Second Phone</th>
                                           <th>Email</th>
-                                          <th>Pre Assigned To</th>
                                           <th>Assigned To</th>
-                                          <th>Status</th>
-                                          <th>Next Follow Up</th>
-                                          <th>Last Follow Up</th>
                                           <th>Request</th>
-                                          <th>Description</th>
-                                          <th>Client Job</th>
-                                          <th>Channel</th>
                                           <th>Source</th>
-                                          <th>Ad Details</th>
-                                          <th>Visit Date</th>
-                                          <th>Lead Type</th>
-                                          <th>Country</th>
-                                          <th>Campaign</th>
-                                          <th>Round</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
@@ -231,10 +201,7 @@
                                           <td>{{ d.created_time }}</td>
                                           <td>{{ d.client_name }}</td>
                                           <td>{{ d.phone }}</td>
-                                          <td><a class="link-primary text-decoration-none" href="{{ d.whatsapp_link }}" target="_blank">{{ d.whatsapp_link }}</a></td>
-                                          <td>{{ d.second_phone }}</td>
                                           <td>{{ d.email }}</td>
-                                          <td>{{ d.preassigned_to_name }}</td>
                                           <td>
                                             <select class="form-select" id="assigned_to" name="assigned_to" aria-label="Default select example" onchange="fetch('/manager/'+'{{data.id}}'+'/select-assign-lead/'+'{{ d.leads_id }}', {method: 'PATCH', body: JSON.stringify({ 'assigned_to': this.options[this.selectedIndex].value}), headers: {'Content-Type': 'application/json'}});" required>
                                                 <option selected value="{{ d.assigned_to_id }}">{{ d.assigned_to_name }}</option>
@@ -243,20 +210,8 @@
                                                 {% endfor %}
                                             </select>
                                           </td>
-                                          <td>{{ d.status }}</td>
-                                          <td>{{ d.next_follow_up }}</td>
-                                          <td>{{ d.last_follow_up }}</td>
                                           <td>{{ d.request }}</td>
-                                          <td>{{ d.description }}</td>
-                                          <td>{{ d.client_job }}</td>
-                                          <td>{{ d.channel }}</td>
                                           <td>{{ d.source }}</td>
-                                          <td>{{ d.ad_details }}</td>
-                                          <td>{{ d.visit_date }}</td>
-                                          <td>{{ d.lead_type }}</td>
-                                          <td>{{ d.country }}</td>
-                                          <td>{{ d.campaign }}</td>
-                                          <td>{{ d.round }}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>

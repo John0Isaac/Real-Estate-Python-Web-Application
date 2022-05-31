@@ -7,7 +7,7 @@ from sqlalchemy.sql.functions import count
 
 # For using locally
 database_name = 'realestate'
-database_path = "mysql+mysqlconnector://{}@{}/{}".format('root:Passw0rd', 'localhost', database_name)
+database_path = "mysql+mysqlconnector://{}@{}/{}".format('root:root', 'localhost', database_name)
 
 # For production
 #database_path = os.environ['CLEARDB_DATABASE_URL']
@@ -430,7 +430,8 @@ class Leads(db.Model):
     descriptions = db.relationship('Description', backref='leads', lazy='dynamic')
 
 
-    def __init__(self, time_created, client_name, email, request, phone, assigned_to_id, source_id):
+    def __init__(self, leads_id, time_created, client_name, email, request, phone, assigned_to_id, source_id):
+        self.leads_id = leads_id
         self.time_created = time_created
         self.client_name = client_name 
         self.email = email
