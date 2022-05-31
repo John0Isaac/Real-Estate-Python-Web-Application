@@ -9,7 +9,6 @@ import babel
 import time
 import os
 import json
-import pandas as pd
 from sqlalchemy.sql import text
 from sqlalchemy import or_, and_
 from sqlalchemy.sql import func
